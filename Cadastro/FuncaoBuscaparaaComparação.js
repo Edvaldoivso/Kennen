@@ -1,26 +1,38 @@
-function fComparaValor(pTabela, pCola, pColb, pCampo1, pCampo2) {
+function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
 
-
+	
     //Verifica Campos Obrigatorios
+	if(pNumComparar == ""){
+		console.log("Insira a quantidade para comparar")
+			
+	}
+		
+	
     if (pTabela == "") {
-        console.log()
+        console.danger("Insira a tabela")
         _cc.msg("Informe a tabela", 'danger')
     }
 
 
     if (pCola == "" || pColb == "") {
-        console.log("Informe as duas Colunas")
+        console.danger("Informe as duas Colunas")
         _cc.msg("Informe as Colunas", 'danger')
     }
 
 
 
     if (pCampo1 == "" && pCampo2 == "") {
-
-        console.log("Informe o Campo")
+        console.danger("Informe o Campo")
         _cc.msg("Informe um Campo", 'danger')
 
     }
+
+
+
+
+//Para comparando 2 colunas
+	if(pNumComparar == 2){
+	console.log("Comparando 2 valores")
 
     //Insere na URL de consulta se os valores estiverem OK e trata o necessário		
 
@@ -49,15 +61,61 @@ function fComparaValor(pTabela, pCola, pColb, pCampo1, pCampo2) {
     if (pCola !== "") {
         urlcompara += "&colunas=" + pCola + ",";
     }
-
+	
     if (pColb !== "") {
         urlcompara += pColb + "&where=" + pCola + "=" + '"' + wCampo1 + '"' + " & " + pColb + "=" + wCampo2 + "&limit=10";;
     }
 
+	}
+	
+//Comparando 1 Coluna
+	
+	if(pNumComparar == 1){
+	console.log("Comparando 1 valor")
+//Insere na URL de consulta se os valores estiverem OK e trata o necessário		
+
+
+    if (pTabela !== "") {
+
+      var  urlcompara = cc.url.ccasegd_token + "tabela=" + pTabela;
+    }
+
+
+
+	if(pCampo1 == ""){
+		pCampo1 = pCampo2;
+	}else{
+		pCampo1 == pCampo1
+	}
+
+    if (pCampo1 !== "") {
+
+        var wCampo1 = fProp(pCampo1, 'value')
+        console.log(wCampo1 + " Campo1")
+
+    }
+
+	if(pCola == ""){
+		pCola = pColb;
+	}else{
+		pCola = pCola;
+	}
+
+
+    if (pCola !== "") {
+        urlcompara += "&colunas=" + pCola;
+    }
+	
+    if (pColb !== "") {
+        urlcompara +="&where=" + pCola + "=" + '"' + wCampo1 + '"' + "&limit=10";
+    }
+
+	}
+
 
     //Faz a busca no DB		
 
-    console.log(urlcompara)
+    console.log("Url " + urlcompara)
 
     $.get(urlcompara).then(function (resBusca) {
         if (resBusca.cnRetorno == 1) {
@@ -72,9 +130,11 @@ function fComparaValor(pTabela, pCola, pColb, pCampo1, pCampo2) {
         } else {
 
             if(resBusca.data.length == 0){
-                alert('nao achou')
+                console.log("Valor não Existe")
+				return false;
             }else{
-                alert('achou')
+               console.log("Valor Já Existe")
+			   return true;
             }
             
             
@@ -89,22 +149,6 @@ function fComparaValor(pTabela, pCola, pColb, pCampo1, pCampo2) {
     })
 
 
-
+	
 
 }//Fim da Funcao
-
-
-
-
-
-
-
-
-/*
-Ir na tabela ver o que possui valor igual ao que vem dos campos combinados:
-Tem que receber as colunas que vão ser pesquisadas e os campos  que receberão os valores
-Precisa de Tabela
-Duas Colunas
-Dois campos em variaveis
-RETORNOS OU AÇÕES vai retornar true ou False.
-*/
