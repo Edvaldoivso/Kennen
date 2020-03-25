@@ -67,12 +67,49 @@ function fComparaValor(pTabela,pCola,pColb,pCampo1,pCampo2){
                     _cc.msg('Erro' + resBusca.anMensagem + '', 'danger')
                     _cc.loading.hide("w-salvando-dados");
                     _cc.msg('Erro durante a operação (Ajax)', 'danger')
-                    return;
+					
+                    
+				}else{
 					
 					
+					var wResult = resBusca["data"][0];
+					var wValor1 = wResult[pCola]
+					var wValor2 = wResult[pColb]
 					
+			
+			
+			console.log(wValor1 +" Resultado vindo Banco")
+			console.log(wValor2 +" Resultado vindo Banco")
+			
+			if(wValor1 == pCola && wValor2 == pColb){
+				var wConfirma = true;
+				alert("Aqui")
+				
 				}
+				
+				}
+				
 			})
-
+			
+			
+			
+			
 }//Fim da Funcao
 
+
+
+
+
+
+
+
+/*
+
+Ir na tabela ver o que possui valor igual ao que vem dos campos combinados:
+Tem que receber as colunas que vão ser pesquisadas e os campos  que receberão os valores
+Precisa de Tabela
+Duas Colunas
+Dois campos em variaveis
+
+RETORNOS OU AÇÕES vai retornar true ou False.
+*/
