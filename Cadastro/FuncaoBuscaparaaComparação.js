@@ -113,6 +113,7 @@ function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
 	}
 
 
+
     //Faz a busca no DB		
 
     console.log("Url " + urlcompara)
@@ -132,18 +133,21 @@ function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
             if(resBusca.data.length == 0){
                 console.log("Valor não Existe")
 				return false;
-            }else{ 
-                _cc.msg('Não foi possivel completar o cadastro pois o codigo de conselho ja existe','danger')
-                $(document.getElementById(pCampo1.toLowerCase())).val("")
+            }else{
                console.log("Valor Já Existe")
 			   return true;
             }
+            
+            
+
+
+            
+
             
 
         }
 
     })
-
 
 	
 
