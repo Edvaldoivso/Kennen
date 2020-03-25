@@ -85,13 +85,13 @@ function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
 	if(pCampo1 == ""){
 		pCampo1 = pCampo2;
 	}else{
-		pCampo1 == pCampo1
+		pCampo1 = pCampo1;
 	}
 
     if (pCampo1 !== "") {
 
-        var wCampo1 = fProp(pCampo1, 'value')
-        console.log(wCampo1 + " Campo1")
+        var wCampo1 = fProp(pCampo1, 'value');
+        console.log(wCampo1 + " Campo1");
 
     }
 
