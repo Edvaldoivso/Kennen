@@ -9,20 +9,20 @@ function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
 		
 	
     if (pTabela == "") {
-        console.danger("Insira a tabela")
+        console.log("Insira a tabela")
         _cc.msg("Informe a tabela", 'danger')
     }
 
 
-    if (pCola == "" || pColb == "") {
-        console.danger("Informe as duas Colunas")
-        _cc.msg("Informe as Colunas", 'danger')
+    if (pCola == "" && pColb == "") {
+        console.log("Informe uma Coluna")
+        _cc.msg("Informe uma Colunas", 'danger')
     }
 
 
 
     if (pCampo1 == "" && pCampo2 == "") {
-        console.danger("Informe o Campo")
+        console.log("Informe o Campo")
         _cc.msg("Informe um Campo", 'danger')
 
     }
@@ -84,14 +84,16 @@ function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
 
 	if(pCampo1 == ""){
 		pCampo1 = pCampo2;
+		console.log(pCampo1+ "campo 1 cima")
 	}else{
-		pCampo1 = pCampo1;
+		pCampo1 = pCampo1
+		console.log(pCampo1 + " campo1 baixo")
 	}
 
     if (pCampo1 !== "") {
 
-        var wCampo1 = fProp(pCampo1, 'value');
-        console.log(wCampo1 + " Campo1");
+        var wCampo1 = fProp(pCampo1, 'value')
+        console.log(wCampo1 + " Campo1")
 
     }
 
@@ -152,3 +154,4 @@ function fComparaValor(pNumComparar,pTabela, pCola, pColb, pCampo1, pCampo2){
 	
 
 }//Fim da Funcao
+
