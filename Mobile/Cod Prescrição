@@ -1,0 +1,110 @@
+window.fComparaJson = function fComparaJson(pJson1, pJson2, pChaves) {
+    wIdx = 0
+    wChavesSize = pChaves.length
+    while (wIdx < wChavesSize) {
+        if ((pJson1["" + pChaves[wIdx] + ""]) === (pJson2["" + pChaves[wIdx] + ""])) {
+            wIdx = wIdx + 1
+            wRetorno = true;
+        } else {
+            wRetorno = false;
+            break;
+        }
+    }
+    return wRetorno;
+}
+
+
+
+alert('iniciou Rotina de Prescricão')
+/* Inicio da rotina de Prescrição*/
+pGrd = ('frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.Grid.grd')
+/* Grid Name */
+var wGrd = _cc.string.valor(pGrd, 1), wGrdTabNome = _cc.string.valor(_ccPrp.consulta(wGrd, "TAB_NOME"), 1);
+/* MENSAGEM DE SALVANDO */
+_cc.loading.show("Salvando dados", 1, "w-salvando-dados");
+/* ID do Registro selecionado */
+var wInpId = $("[data-inp-obj-referencia-datagrid='" + wGrd + "'][data-inp-col-nome='id']").val();
+/* Função que Pega os valores dos Campos Atuais */
+wJson = _ccBtn.jsonDados(wGrd);
+/* Registros iniciais Antes de qualquer Alteração wJson10 */
+wJson10 = wJsonInicial
+/* Registros Atuais na tela wJson20*/
+wJson20 = (JSON.parse(wJson))
+/* MENSAGEM DE SALVANDO */
+_cc.loading.show("Salvando dados", 1, "w-salvando-dados");
+/* Os Campos que serão verificados se foram Alterados [Campos Chaves] */
+window.wMatrizColunas = ['cnmaterial', 'cninternacao']
+/* Função que Compra json  */
+alert('iniciou a Comparação dos Json')
+fComparaJson(wJson10, wJson20, wMatrizColunas)
+alert('Terminou a Comparação dos Json')
+/* Se o retorno for TRUE, não houve alteração nos [Campos Chaves] se o Retorno for FALSE, Houve alteração nos [Campos Chaves]*/
+alert('Retorno da Comparação ' + wRetorno)
+if (wRetorno == false) {
+    alert('Houve Alteração')
+    /*Execulta o Put*/
+    wJsonInicial.dtfinal = moment().format('DD/MM/YYYY')
+    wSaveUrl = cc.url.tabela + "tabela=" + wGrdTabNome + "&id=" + wInpId;
+    wSaveMthd = "put";
+    alert('Iniciou o put')
+    wSaveAjx = _cc.ajax(wSaveUrl, wSaveMthd, "application/json", JSON.stringify(window.wJsonInicial), "", "");
+    $.when(wSaveAjx).then(
+        function (jsonResp) {
+            console.log('RETORNO PUT : ' + jsonResp["cnRetorno"])
+            console.log('DETALHE PUT : ' + jsonResp["anMensagem"])
+            if (jsonResp["cnRetorno"] == 0) {
+                _cc.msg('PUT', 'success')
+                /*Execulta o POST*/
+                alert('Entrei no Post')
+                _cc.loading.hide("w-salvando-dados");
+                wSaveUrl1 = cc.url.tabela + "tabela=" + wGrdTabNome;
+                wSaveMthd1 = "post";
+                wJson2 = (JSON.parse(wJson))
+                wCsMedicamento = (parseInt(wJsonInicial.csprescricaomedicamento) + 1)
+                wJson2.csprescricaomedicamento = ('' + wCsMedicamento + '')
+                wSaveAjx1 = _cc.ajax(wSaveUrl1, wSaveMthd1, "application/json", JSON.stringify(wJson2), "", "");
+                $.when(wSaveAjx1).then(
+                    function (jsonResp) {
+                        console.log('RETORNO POST: ' + jsonResp["cnRetorno"])
+                        console.log('DETALHE POST: ' + jsonResp["anMensagem"])
+                        if (jsonResp["cnRetorno"] == 0) {
+                            alert('Post Sucesso')
+                            _cc.modal.close('frmshm.app.main.corpo.prescricao.corpo.medicamentos.fme.main.dados')
+                            _ccGrd.updateDados('frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.Grid.grd', '', 'frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.main.Dados.Campos.ID')
+                            _cc.loading.hide("w-salvando-dados");
+                            _cc.msg('POST', 'success')
+                        } else {
+                            alert('Post Erro')
+                            _cc.modal.close('frmshm.app.main.corpo.prescricao.corpo.medicamentos.fme.main.dados')
+                            _ccGrd.updateDados('frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.Grid.grd', '', 'frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.main.Dados.Campos.ID')
+                            _cc.msg('POST', 'danger')
+                            _cc.loading.hide("w-salvando-dados");
+                            return;
+                        }
+                    }
+                )
+            } else {
+                _cc.msg('PUT', 'danger')
+                _cc.loading.hide("w-salvando-dados");
+                return;
+            }
+        }
+    )
+}else{
+    alert('Só faz o Put')
+    wSaveUrl1 = cc.url.tabela + "tabela=" + wGrdTabNome + "&id=" + wInpId;
+    wSaveMthd1 = "Put";
+    wJson2 = (JSON.parse(wJson))
+    wSaveAjx1 = _cc.ajax(wSaveUrl1, wSaveMthd1, "application/json", JSON.stringify(wJson2), "", "");
+    $.when(wSaveAjx1).then(
+        function (jsonResp) {
+            console.log('RETORNO PUT : ' + jsonResp["cnRetorno"])
+            console.log('DETALHE PUT : ' + jsonResp["anMensagem"])
+        }
+    )
+    _ccGrd.updateDados('frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.Grid.grd', '', 'frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.main.Dados.Campos.ID')
+    _cc.modal.close('frmshm.app.main.corpo.prescricao.corpo.medicamentos.fme.main.dados')
+    _ccGrd.updateDados('frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.Grid.grd', '', 'frmshm.app.main.corpo.Prescricao.Corpo.Medicamentos.fme.main.Dados.Campos.ID')
+    _cc.loading.hide("w-salvando-dados");
+    return;
+}
