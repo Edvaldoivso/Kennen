@@ -31,7 +31,7 @@ if (wProcura == false){
   fProp("frmshc.evolucao.main.tabs.fldImagens.Core.csPacienteImagem",'value'," ")
   fProp("frmshc.evolucao.main.tabs.fldImagens.Core.dtImagem",'value'," ")
   fProp('frmshc.evolucao.main.tabs.fldEvolucao.FMEevolucao.Botoes.Salvar', 'hidden', 0);
-  _cc.loading.show("", 1, "w-Gerando Evolução");
+  
   
   
   
