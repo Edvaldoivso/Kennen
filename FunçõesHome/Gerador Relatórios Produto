@@ -1,0 +1,180 @@
+/*---FUNCÕES SYSCARE---*/
+window.cc_relatorio = async function frelatorio(pQuebraOpcao, pboSintetico, pOrigemTP, pConteudo, wpMPicture, wpMTitulos, pDivDestino) {
+
+
+    /* Gif Gerando Ralatorio */
+    _cc.loading.show("Gerando Relatorio", 1, "w-salvando-dados");
+    /*--------------Parâmetros do Gerador-------------------*/
+    wpPageLen = 60;
+    /*------------------------------------------------------*/
+    /* Parametros Obrigatorios*/
+    var wpQuebraOpcao = parseInt(pQuebraOpcao) // (1-Produto) (2-Transação)
+    var wboSintetico = document.getElementById(pboSintetico.toLowerCase()).checked;
+    /* AJAX */
+    if (pOrigemTP == 1) {
+        $.get(pConteudo).then(function (res) {
+            fMontaRelatorio(res)
+        }).catch(err => {
+            _cc.msg('Erro Ajax', 'danger')
+            _cc.loading.hide("w-salvando-dados");
+            console.log("error Ajax:", err)
+            return;
+        })
+        /* JSON */
+    } else if (pOrigemTP == 2) {
+        fMontaRelatorio(pConteudo)
+    } else {
+        _cc.msg('Parametro [pOrigemTP] invalido', 'danger')
+        _cc.loading.hide("w-salvando-dados");
+        return;
+    }
+
+    async function fMontaRelatorio(pRes) {
+        window.res = pRes
+        /* JSON */
+        if (pQuebraOpcao == 2) {
+            wQtdCol = 0;
+            var data = res;
+        }
+        /* URL */
+        if (pOrigemTP == 1) {
+            if (res.cnRetorno == 1) {
+                console.log('RETORNO' + res.cnRetorno)
+                console.log('RETOTNO' + res.anMensagem)
+                _cc.msg('Erro' + res.anMensagem + '', 'danger')
+                _cc.loading.hide("w-salvando-dados");
+                _cc.msg('Erro durante a operação (Ajax)', 'danger')
+                return;
+            } else {
+                wQtdCol = Object.keys(res.data[0]).length - 1
+                var data = res.data;
+                if (pOrigemTP == 1) {
+                    if (pQuebraOpcao == 2) {
+                        wQtdCol = 6;
+                        wQtdCol = wpMTitulos.length;
+                    }
+
+                    var wHeader_X = "";
+                    /* Titulo das colunas*/
+                    var QtdColsTable = wpMTitulos.length
+                    wpMTitulos.forEach(titulo => {
+                        wHeader_X += "<td style='border: 2px solid #0a0a0aa4'; position: sticky; > " + titulo + "</td>";
+                    });
+                }
+            }
+        }
+        
+        var wImprime = 0;
+        var wImprimeRodape = 0;
+        var wLinhaAtual = 0;
+        var wLinhaTotal = 1;
+        var wPaginaAtual = 1;
+        var wc_SysDate = moment().format('DD/MM/YYYY');// Buscar do cCaseGD
+        var wc_SysDateTime = moment().format('DD/MM/YYYY LTS');   // Buscar do cCaseGD
+        var wc_SysTime = moment().format('LTS');   // Buscar do cCaseGD
+
+        if (wpQuebraOpcao == 4) {
+            var wJson = res;
+            var wValorInicial = wJson["wValorInicial"];
+            var wSaldoInicial = wJson["wSaldoInicial"];
+            /* VALOR INICIAL COM 6 CASAS DECIMAIS*/
+            var wValorInicial = fMaskNumber(wValorInicial, 6, 1, 0)
+            /* SALDO INICIAL COM 0 CASAS DECIMAIS*/
+            var wSaldoInicial = fMaskNumber(wSaldoInicial, 0, 1, 0)
+            
+            $(document.getElementById(pDivDestino.toLowerCase())).append("<table class='table'  colspan='12' id='modelo1'><thead></thead><tbody id='relatorio4'></tbody></table>");
+            $(document.getElementById('relatorio4')).append("<tr style='text-align: center ' class='cc-bg-cinza-escuro cc-text-branco cc-border-preto cc-gridccase-important'> <td colspan='6' class='select' value='"+wSaldoInicial+"'> Saldo Inicial: " + wSaldoInicial + " </td> <td colspan='6' class='select' value='"+wValorInicial+"'> Valor Inicial : " + wValorInicial + " </td></tr>");
+            _cc.loading.hide("w-salvando-dados");
+            return;
+        }
+        if (wpQuebraOpcao == 5) {
+            var wJson = res;
+            var wValorFinal = wJson["wValorFinal"];
+            var wSaldoFinal = wJson["wSaldoFinal"];
+            /* VALOR FINAL COM 6 CASAS DECIMAIS*/
+            var wValorFinal = fMaskNumber(wValorFinal, 6, 1, 0)
+            /* SALDO FINAL COM 0 CASAS DECIMAIS*/
+            var wSaldoFinal = fMaskNumber(wSaldoFinal, 0, 1, 0)
+          
+            $(document.getElementById(pDivDestino.toLowerCase())).append("<table class='table' id='modelo2'><thead></thead><tbody id='relatorio5'></tbody></table>")
+            $(document.getElementById('relatorio5')).append("<tr style='text-align: center' class='cc-bg-cinza-escuro cc-text-branco cc-border-preto cc-gridccase-important' > <td colspan='6' class='select' value='"+wSaldoFinal+"'> Saldo Final: " +wSaldoFinal+ " </td> <td colspan='6' class='select' value='"+wValorFinal+"'> Valor Final: " +wValorFinal+ "</td></tr>");
+            _cc.loading.hide("w-salvando-dados");
+            return;
+        }
+
+        $(document.getElementById(pDivDestino.toLowerCase())).append("<table class='table display' style='border-spacing: 2px' id='modelo'><thead id='theadModelo'></thead><tbody id='tbodyModelo' class='noExl'></tbody></table>");
+        var wTbody = $(document.getElementById('tbodyModelo'))
+
+        for (wx = 0; wx < data.length; wx++) {
+            wRow = "";
+            wImprime = 0;
+            /*----Impressão do CABEÇALHO-----------*/
+            if (wLinhaAtual == 0) {
+                wTbody.append("<tr style='text-align: center' class='cc-bg-azul-escuro cc-text-branco cc-shadow-cinza'>" + wHeader_X + "</tr>");
+                wLinhaAtual++;
+            }
+            /*------Montagem  da Linha de DETALHE--*/
+            var wpMPicturexx = wpMPicture;
+
+            var wQtdColxx = wQtdCol;
+            var wQtdColYY = 0;
+            for (wy in data[wx]) {
+                window.wCmp = (data[wx][wy] == null) ? " " : data[wx][wy];
+                if (wQtdColxx == 0) {
+                    break;
+                }
+                if ([wy] == 'newseq') {
+                    /* Inclui a Sequencia de linhas na primeira coluna */
+                    wCmp = wLinhaTotal;
+                }
+                if (wpMPicturexx[wQtdColYY] !== undefined) {
+                    wPicture = eval(wpMPicturexx[wQtdColYY]);
+                    wRow += "<td class='select' style='border: 2px solid #0a0a0aa4; text-align: right' value='"+wPicture+"'>" + wPicture + "</td>";
+                } else {
+                    wRow += "<td class='select' style='border: 2px solid #0a0a0aa4 ; text-align: center' value='"+wCmp+"'>" + window.wCmp + "</td>";
+                }
+                wQtdColYY++;
+                wQtdColxx--;
+            }
+            //-------------------------IMPRESSÃO DA LINHA DE DETALHE E QUEBRAS (TOTAIS)----------------------------
+            if (data[wx].Quebra !== null) {
+                if (data[wx].Quebra == "mov_trans" || data[wx].Quebra == "mat_codigo") {
+                    wTbody.append("<tr  class='cc-bg-cinza-escuro cc-text-branco cc-border-preto '>" + wRow + "</tr>");
+                }
+                if (data[wx].Quebra == "Geral") {
+                    wTbody.append("<tr  class='cc-bg-laranja-escuro cc-border-preto '>" + wRow + "</tr>");
+                }
+                wImprime = 1;
+            } else {
+                if (wboSintetico == 0) {   // Se for Analítico imprime a linha de Detalhe
+                    wImprime = 1;
+                    wTbody.append("<tr  class='cc-bg-cinza-claro cc-border-preto cc-gridccase-important'>" + wRow + "</tr>");
+                }
+            }
+            if (wImprime == 1) {
+                wLinhaAtual++;
+                wLinhaTotal++;
+            }
+            if (wpPageLen > 0) {
+                if (wLinhaAtual > wpPageLen) {
+                    wImprimeRodape = 1;
+                }
+            }
+            if (wx + 1 == data.length) {
+                wImprimeRodape = 1;
+            }
+            /*---Impressão do RODAPÉ e Quebra de Página---------------*/
+            if (wImprimeRodape == 1) {
+                wTbody.append("<tr style='text-align: left' class='cc-bg-cinza-escuro cc-text-branco '><td colspan='" + QtdColsTable + "'>Página: " + wPaginaAtual + "  " + wc_SysDate + "  " + wc_SysTime + "</td></tr>");
+                wLinhaAtual = 0;
+                wImprimeRodape = 0;
+                wPaginaAtual++;
+            }
+        }
+        /* fecha o Gif Gerando Ralatorio */
+        _cc.loading.hide("w-salvando-dados");
+        $('#modelo').DataTable();
+        /* Alerta Sucesso na tela */
+        _cc.msg('Relatorio Gerado com Sucesso', 'success')
+    }
+}
