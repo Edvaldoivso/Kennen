@@ -59,11 +59,11 @@ if (wpmat_codigo != "" || wpmat_codigo != 0) {
   
 
  if (wppac_codigo != "" || wppac_codigo != 0) {
-    wURL += " and (pac_codigo = '" + wppac_codigo + "')";
+    wURL += " and (pac_codigo.nmPaciente = '" + wppac_codigo + "')";
   } 
   
 if (wpmov_trans != "" || wpmov_trans != 0) {
-  wpmov_trans = "teste"
+ 
     wURL += " and (mov_trans = '" + wpmov_trans + "')";
   }
 
