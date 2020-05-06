@@ -1,0 +1,154 @@
+var Wverifica = $("*").hasClass("border-danger")
+
+if (Wverifica == true) {
+    _cc.msg("Campos com Problemas verifique os Campos em vermelho ", "danger")
+
+} else {
+
+    /* Remove os Relatorios Já existentes*/
+    var wObjTableHtml = document.getElementById('modelo')
+    wObjTableHtml !== null ? wObjTableHtml.remove() : wObjTableHtml
+    var wObjTableHtml = document.getElementById('modelo1')
+    wObjTableHtml !== null ? wObjTableHtml.remove() : wObjTableHtml
+    var wObjTableHtml = document.getElementById('modelo2')
+    wObjTableHtml !== null ? wObjTableHtml.remove() : wObjTableHtml
+
+    /*-------------------------- Corpo do Relatorio de TRANSAÇÕES----------------------------*/
+    var wboSintetico = document.getElementById('frmshc.Transacao.Main.Campo.boSintetico'.toLowerCase()).checked;
+    var wpFilial = document.getElementById('frmshc.Transacao.Main.Campo.Filial'.toLowerCase()).value;
+    var wpdtMovInicial = document.getElementById('frmshc.Transacao.Main.Campo.dtMovInicial'.toLowerCase()).value;
+    var wpdtMovFinal = document.getElementById('frmshc.Transacao.Main.Campo.MovFinal'.toLowerCase()).value;
+    var wpmat_codigo = document.getElementById('frmshc.Transacao.Main.Campo.mat_codigo'.toLowerCase()).value;
+    var wppac_codigo = document.getElementById('frmshc.Transacao.Main.Campo.pac_codigo'.toLowerCase()).value
+    var wpmov_trans = document.getElementById('frmshc.Transacao.Main.Campo.mov_trans'.toLowerCase()).value
+    var wpdmProdutoTipo = document.getElementById('frmshc.Transacao.Main.Campo.dmProdutoTipo'.toLowerCase()).value
+    var wpdmProdutoStatus = document.getElementById('frmshc.Transacao.Main.Campo.dmProdutoStatus'.toLowerCase()).value
+    var wpcaProdutoClassificacao = document.getElementById('frmshc.Transacao.Main.Campo.caProdutoClasssificacao'.toLowerCase()).value;
+    var wpcaProdutoGrupo = document.getElementById('frmshc.Transacao.Main.Campo.caProdutoGrupo'.toLowerCase()).value;
+
+    wpFilial = (wpFilial == '') ? 0 : wpFilial;
+    wpmat_codigo = (wpmat_codigo == '') ? 0 : wpmat_codigo;
+    wppac_codigo = (wppac_codigo == '') ? 0 : wppac_codigo
+    wboSintetico = (wboSintetico == true) ? 1 : 0;
+
+    wpdmProdutoStatus = (wpdmProdutoStatus == '0') ? '' : wpdmProdutoStatus;      // Todos
+    wpdmProdutoStatus = (wpdmProdutoStatus == '1') ? 'S' : wpdmProdutoStatus;     // Ativos
+    wpdmProdutoStatus = (wpdmProdutoStatus == '2') ? 'N' : wpdmProdutoStatus;     // Inatvos
+
+    var wmov_dt_sys = '2099-12-31';
+
+
+    /* descrição dos parametros da função Consulta_See_MatMed_Mov */
+    var wpmat_codigo = (wpmat_codigo == "") ? 0 : wpmat_codigo  //"1 = p_mat_codigo -  INT"
+    var wpFilial = (wpFilial == "") ? 0 : wpFilial  //"2 = p_mov_filial -  INT"
+    var wpmov_trans = (wpmov_trans == "") ? "" : wpmov_trans //"3 = p_mov_trans - VARCHAR(50)"
+    var wpdmProdutoTipo = (wpdmProdutoTipo == "") ? "" : wpdmProdutoTipo //"4 = p_mat_tip - VARCHAR(50)"
+    var wpdmProdutoStatus = (wpdmProdutoStatus == "") ? "" : wpdmProdutoStatus //"5 = p_mat_ativo -  VARCHAR(50)"
+    var wpdtMovInicial = (wpdtMovInicial == "") ? "" : wpdtMovInicial //"6 = p_mov_dt_max -  VARCHAR(50)"
+    wpdtMovInicial = wpdtMovInicial.split("/") // 0-dia, 1-mes,2-ano
+    wpdtMovInicial = wpdtMovInicial[2] + "-" + wpdtMovInicial[1] + "-" + wpdtMovInicial[0]
+
+    //wpmat_codigo = (wpmat_codigo == "") ? '' : wpmat_codigo //"7 = p_almox_codigo -  VARCHAR(50)"
+    //wpmat_codigo = (wpmat_codigo == "") ? '' : wpmat_codigo //"8 = p_matl_lote - VARCHAR(50)"
+
+    /* RELATORIO SALDOS   */
+    async function wRelatorio4() {
+        /* RELATORIO 4-SALDOS INICIAIS  */
+        wSql = cc.url.ccasegd_token + "&"
+        wSql += "tabela=shcpaciente&"
+        wSql += "limit=1&"
+        wSql += "colunas=#Consulta_See_MatMed_Mov(" + wpmat_codigo + "," + wpFilial + ",'" + wpmov_trans + "','" + wpdmProdutoTipo + "','" + wpdmProdutoStatus + "','" + wpdtMovInicial + "','','')#"
+        wSql = wSql.replace(/#/g, String.fromCharCode(96))
+        var wNomoRes = "Consulta_See_MatMed_Mov(" + wpmat_codigo + "," + wpFilial + ",'" + wpmov_trans + "','" + wpdmProdutoTipo + "','" + wpdmProdutoStatus + "','" + wpdtMovInicial + "','','')"
+        $.get(wSql).then(async function (res) {
+            if (res.data) {
+                if (res.data.length > 0) {
+                    var wData = res.data[0][wNomoRes];
+                    if (wData) {
+                        wData = wData.split("|") // 0-Saldo, 1-Valor
+                        var wValorInicial = parseFloat(wData[1]);
+                        var wSaldoInicial = parseInt(wData[0]);
+                        wSaldoInicial = (isNaN(wSaldoInicial)) ? 0 : wSaldoInicial;
+                        wValorInicial = (isNaN(wValorInicial)) ? 0 : wValorInicial;
+                        
+                        var wJson = {
+                            /* VALOR INICIAL PARSEFLOAT */
+                            "wValorInicial": wValorInicial,
+                            /* SALDO INICIAL PARSEINT */
+                            "wSaldoInicial": wSaldoInicial,
+                        }
+                    } else {
+                        var wJson = {
+                            /* VALOR INICIAL PARSEFLOAT */
+                            "wValorInicial": parseFloat("0"),
+                            /* SALDO INICIAL PARSEINT */
+                            "wSaldoInicial": parseInt("0"),
+                        }
+                    }
+                    cc_relatorio(4, 'frmshc.Transacao.Main.Campo.boSintetico', 2, wJson, '', '', 'frmshc.Transacao.Main.SaldosIniciais')
+                    /* RELATORIO 5-SALDOS FINAIS  */
+                    /* DESE */
+                    var WURL = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
+                    /* PLENO */
+                    //var WURL = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
+                    WURL += "&COLUNAS= %60sum(mov_qtd_ent %2B mov_qtd_sai) AS mov_qtd_ENT_SAI ,SUM(mov_Valor_Mov_LoteAlmoxarifado_Ent %2B mov_Valor_Mov_LoteAlmoxarifado_Sai) AS mov_Valor_Mov_LoteAlmoxarifado_ENT_SAI %60 ";
+                    WURL += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt>= '" + wpdtMovInicial + "' AND mov_dt<= '" + wpdtMovFinal + "' AND mov_dt_sys <= '" + wmov_dt_sys + "' AND NOT (mov_qtd=0 AND mov_trans='INV')"// AND NOT (mov_qtd_sai=0 AND mov_qtd_ent=0 AND mov_prc_unit=0)"; // 
+                    $.get(WURL).then(async function (res) {
+                        wJson = res.data[0]
+                        var wSaldoFinal = parseInt(wJson["mov_qtd_ENT_SAI"])
+                        var wValorFinal = parseFloat(wJson["mov_Valor_Mov_LoteAlmoxarifado_ENT_SAI"])
+
+                        wSaldoFinal  =  (isNaN(wSaldoFinal)) ? 0 : wSaldoFinal;
+                        wSaldoInicial = (isNaN(wSaldoInicial)) ? 0 : wSaldoInicial;
+                        wValorFinal = (isNaN(wValorFinal)) ? 0 : wValorFinal;
+                        wValorInicial = (isNaN(wValorInicial)) ? 0  :wValorInicial;
+
+                        wJson = {
+                            "wSaldoFinal": wSaldoFinal+wSaldoInicial,
+                            "wValorFinal": wValorFinal+wValorInicial,
+                        }
+                        cc_relatorio(5, 'frmshc.Transacao.Main.Campo.boSintetico', 2, wJson, '', '', 'frmshc.Transacao.Main.SaldosFinais')
+                    }).catch(err => {
+                        _cc.msg('Erro durante a consulta !!', 'danger');
+                        console.log('Errro')
+                        console.log(wSql)
+                        console.log(err)
+                        return;
+                    })
+                } else {
+                    _cc.msg('Nenhum registro encontrado função sql [Saldo Inicial, Saldo Final]', 'danger')
+                }
+            } else {
+                _cc.msg('Nenhum registro encontrado função sql [Saldo Inicial, Saldo Final]', 'danger')
+            }
+
+        }).catch(err => {
+            _cc.msg('Erro durante a consulta !!', 'danger');
+            console.log('Errro')
+            console.log(wSql)
+            console.log(err)
+            return;
+        })
+
+    }
+
+    /* RELATORIO 2-MOVIMENTACOES */
+    async function wRelatorio2() {
+        var wpMPicture = [, , , , , 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,6,1,0)', 'fMaskNumber(wCmp,6,1,0)', 'fMaskNumber(wCmp,2,1,0)', 'fMaskNumber(wCmp,2,1,0)', , ,];  // 0-none; 1-Decimal-0; 2-decimal-2; 3-Decimal-4
+        var wpMTitulos = ['SEQ', 'TRANSAÇÃO', 'Produto', 'Descrição', 'Tipo', 'QUANTIDADE<br>ENTRADAS', 'QUANTIDADE<br>SAÍDAS', 'FILIAL <BR> VALOR ENTRADAS', 'FILIAL <BR> VALOR SAÍDAS'];
+        /* DESE */
+        var wURI = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
+        /* PLENO */
+        //var wURI = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
+        wURI += "&COLUNAS=mov_trans,mat_codigo,mat_codigo.dsMaterial as dsMaterial,mat_codigo.caMaterialTP as caMaterialTP,mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_Ent,mov_Valor_Mov_LoteAlmoxarifado_Sai,mov_Valor_Mov_Ent,mov_Valor_Mov_Sai , id,mov_dt,mov_filial,matl_lote,almox_codigo,pac_codigo,mov_prc_unit";
+        wURI += "&TOTALIZADORES=mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_Ent,mov_Valor_Mov_LoteAlmoxarifado_Sai";
+        wURI += "&REPETIDORES=mov_trans";
+        wURI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt>= '" + wpdtMovInicial + "' AND mov_dt<= '" + wpdtMovFinal + "' AND mov_dt_sys <= '" + wmov_dt_sys + "' AND NOT (mov_qtd=0 AND mov_trans='INV')"// AND NOT (mov_qtd_sai=0 AND mov_qtd_ent=0 AND mov_prc_unit=0)"; // 
+        wURI += "&GROUPBY=mov_trans, mov_dt, id&QUEBRAS=mov_filial,mov_trans";
+
+        cc_relatorio(2, 'frmshc.Transacao.Main.Campo.boSintetico', 1, wURI, wpMPicture, wpMTitulos, 'frmshc.Transacao.Main.Grid')
+
+    }
+    await wRelatorio4()
+    await wRelatorio2()
+}
