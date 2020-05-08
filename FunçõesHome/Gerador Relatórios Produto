@@ -48,6 +48,41 @@ window.cc_relatorio = async function frelatorio(pQuebraOpcao, pboSintetico, pOri
             } else {
                 wQtdCol = Object.keys(res.data[0]).length - 1
                 var data = res.data;
+                
+                //var wTrans = data[0]["mov_trans"];
+                //if(wTrans == "REC1") {data[0]["mov_trans"] = "Teste"}
+                
+              data.forEach(row =>{
+                var wTrans = row["mov_trans"]
+                
+                var wTipo = row["mat_TP"]
+                
+                if(wTrans == "REC1") {row["mov_trans"] = "Entrada de Nota fiscal"};
+                
+                if(wTrans == "REC3") {row["mov_trans"] = "Outras Entradas"};
+                
+                if(wTrans == "REC6") {row["mov_trans"] = "Entrada por Transferência"};
+                
+                if(wTrans == "SAI") {row["mov_trans"] = "Outras Saídas"};
+                
+                if(wTrans == "SAI6") {row["mov_trans"] = "Saída por Transferência"};
+                
+                if(wTrans == "SEP") {row["mov_trans"] = "Saída para Paciente"};
+                
+                if(wTrans == "DEV") {row["mov_trans"] = "Entrada por Devolução do Paciente"};
+                
+                if(wTrans == "INV") {row["mov_trans"] = "Inventário"};
+                ///////////////////////////////////////
+                
+                
+                if(wTipo ==  "1"){row["mat_TP"] = "Medicamento"}
+                if(wTipo ==  "2"){row["mat_TP"] = "Material"}
+                if(wTipo ==  "3"){row["mat_TP"] = "Dieta"}
+                
+                
+                
+                
+              })
                 if (pOrigemTP == 1) {
                     if (pQuebraOpcao == 2) {
                         wQtdCol = 6;
