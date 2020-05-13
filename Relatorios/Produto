@@ -86,8 +86,9 @@ if (Wverifica == true) {
         wURI += "&GROUPBY=mat_codigo, mov_dt, id&QUEBRAS=mat_codigo,mov_filial";
         wURI += "&TOTALIZADORES=mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_ent,mov_Valor_Mov_LoteAlmoxarifado_sai,mov_valor_total";
         wURI += "&REPETIDORES=mat_codigo,dsMaterial,mov_saldo,mov_customedio,mov_valor_total";
+        wURI += "&ORDERBY=mat_codigo,mov_dt,mov_seq";
         /*Com base no AJAX*/
-
+        
         try {
             await cc_relatorio(1, 'frmshc.Produto.fme.fmeFiltro.BoSintetico', 1, wURI, wpMPicture, wpMTitulos, wDivReferencia)
         } catch (error) {
