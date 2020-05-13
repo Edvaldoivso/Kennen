@@ -80,6 +80,15 @@ window.cc_relatorio = async function frelatorio(pQuebraOpcao, pboSintetico, pOri
                 if(wTipo ==  "3"){row["mat_TP"] = "Dieta"}
                 
                 
+                var wcaTipo = row["caMaterialTP"];
+                
+                if(wcaTipo ==  "1"){row["caMaterialTP"] = "Medicamento"}
+                if(wcaTipo ==  "2"){row["caMaterialTP"] = "Material"}
+                if(wcaTipo ==  "3"){row["caMaterialTP"] = "Dieta"}
+                
+                
+                
+                
                 
                 
               })
