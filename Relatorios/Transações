@@ -33,6 +33,10 @@ if (Wverifica == true) {
     if (wpAlmoxarifado != "" || wpAlmoxarifado != 0) {
     wURL += " and (almox_codigo = '" + wpAlmoxarifado + "')";
   }
+  
+  if (wpdtMovInicial ) wURL += " AND (mov_dt>= '" + wpdtMovInicial + "')";
+
+if (wpdtMovFinal   ) wURL += " AND (mov_dt<= '" + wpdtMovFinal   + "')";
 
 
     wpFilial = (wpFilial == '') ? 0 : wpFilial;
@@ -53,7 +57,7 @@ if (Wverifica == true) {
     var wpmov_trans = (wpmov_trans == "") ? "" : wpmov_trans //"3 = p_mov_trans - VARCHAR(50)"
     var wpdmProdutoTipo = (wpdmProdutoTipo == "") ? "" : wpdmProdutoTipo //"4 = p_mat_tip - VARCHAR(50)"
     var wpdmProdutoStatus = (wpdmProdutoStatus == "") ? "" : wpdmProdutoStatus //"5 = p_mat_ativo -  VARCHAR(50)"
-    var wpdtMovInicial = (wpdtMovInicial == "") ? "" : wpdtMovInicial //"6 = p_mov_dt_max -  VARCHAR(50)"
+   // var wpdtMovInicial = (wpdtMovInicial == "") ? "" : wpdtMovInicial //"6 = p_mov_dt_max -  VARCHAR(50)"
       wpdtMovInicial = wpdtMovInicial.split("/") // 0-dia, 1-mes,2-ano
       wpdtMovInicial = wpdtMovInicial[2] + "-" + wpdtMovInicial[1] + "-" + wpdtMovInicial[0]
 
@@ -102,7 +106,7 @@ if (Wverifica == true) {
                     /* PLENO */
                     //var WURL = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
                     WURL += "&COLUNAS= %60sum(mov_qtd_ent %2B mov_qtd_sai) AS mov_qtd_ENT_SAI ,SUM(mov_Valor_Mov_LoteAlmoxarifado_Ent %2B mov_Valor_Mov_LoteAlmoxarifado_Sai) AS mov_Valor_Mov_LoteAlmoxarifado_ENT_SAI %60 ";
-                    WURL += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt>= '" + wpdtMovInicial + "' AND mov_dt<= '" + wpdtMovFinal + "' AND mov_dt_sys <= '" + wmov_dt_sys + "' AND NOT (mov_qtd=0 AND mov_trans='INV')"// AND NOT (mov_qtd_sai=0 AND mov_qtd_ent=0 AND mov_prc_unit=0)"; // 
+                    WURL += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt_sys <= '" + wmov_dt_sys + "' AND NOT (mov_qtd=0 AND mov_trans='INV')" + wURL// AND NOT (mov_qtd_sai=0 AND mov_qtd_ent=0 AND mov_prc_unit=0)"; // 
                     $.get(WURL).then(async function (res) {
                         wJson = res.data[0]
                         var wSaldoFinal = parseInt(wJson["mov_qtd_ENT_SAI"])
@@ -144,19 +148,18 @@ if (Wverifica == true) {
 
     /* RELATORIO 2-MOVIMENTACOES */
     async function wRelatorio2() {
-        var wpMPicture = [     ,            ,      ,         ,            , 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,6,1,0)', 'fMaskNumber(wCmp,6,1,0)'   , 'fMaskNumber(wCmp,2,1,0)' , 'fMaskNumber(wCmp,6,1,0)', , ,];  // 0-none; 1-Decimal-0; 2-decimal-2; 3-Decimal-4
-        //var wpMPicture = [    ,    ,            ,                 ,                    , 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,6,1,0)', 'fMaskNumber(wCmp,6,1,0)', 'fMaskNumber(wCmp,2,1,0)', 'fMaskNumber(wCmp,2,1,0)', , ,];  // 0-none; 1-Decimal-0; 2-decimal-2; 3-Decimal-4
-        var wpMTitulos = ['SEQ', 'TRANSAÇÃO','Data','Produto', 'Descrição', 'Tipo'                   , 'QUANTIDADE<br>ENTRADAS' , 'QUANTIDADE<br>SAÍDAS'   , 'FILIAL <BR> VALOR ENTRADAS', 'FILIAL <BR> VALOR SAÍDAS','Custo <br>Médio'];
+        var wpMPicture = [     ,            ,      ,                 ,                  ,              ,                         , 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,0,1,0)', 'fMaskNumber(wCmp,6,1,0)'   , 'fMaskNumber(wCmp,6,1,0)' , 'fMaskNumber(wCmp,6,1,0)', , ,];  // 0-none; 1-Decimal-0; 2-decimal-2; 3-Decimal-4
+        var wpMTitulos = ['SEQ', 'TRANSAÇÃO','DATA','CODIDO PRODUTO', 'DESCRIÇÃO PRODUTO', 'PACIENTE'  ,'TIPO PRODUTO'           , 'QUANTIDADE<BR>ENTRADAS' , 'QUANTIDADE<BR>SAÍDAS'   , 'VALOR ENTRADAS'           , 'VALOR SAÍDAS'             ,'CUSTO <BR>MÉDIO'];
         //var wpMTitulos = ['SEQ', 'TRANSAÇÃO', 'PRODUTO CÓDIGO', 'PRODUTO DESCRIÇÃO', 'TIPO PRODUTO '  , 'QUANTIDADE<br>ENTRADAS', 'QUANTIDADE<br>SAÍDAS', 'VALOR ENTRADAS', 'VALOR SAÍDAS'];
         /* DESE */
         var wURI = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
         /* PLENO */
         //var wURI = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
         //wURI += "&COLUNAS=mov_trans,mat_codigo,mat_codigo.dsMaterial as dsMaterial,mat_codigo.caMaterialTP as caMaterialTP,mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_Ent,mov_Valor_Mov_LoteAlmoxarifado_Sai,mov_Valor_Mov_Ent,mov_Valor_Mov_Sai , id,mov_dt,mov_filial,matl_lote,almox_codigo,pac_codigo,mov_prc_unit";
-        wURI += "&COLUNAS=mov_trans,mov_dt,mat_codigo,mat_codigo.dsMaterial as dsMaterial,mat_codigo.caMaterialTP as caMaterialTP,mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_Ent,mov_Valor_Mov_LoteAlmoxarifado_Sai,mov_CustoMedioLoteAlmoxarifado,mov_Valor_Mov_Ent,mov_Valor_Mov_Sai , id,mov_dt,mov_filial,matl_lote,almox_codigo,pac_codigo,mov_prc_unit";
+        wURI += "&COLUNAS=mov_trans,mov_dt,mat_codigo,mat_codigo.dsMaterial as dsMaterial,pac_codigo.nmPaciente,mat_codigo.caMaterialTP as caMaterialTP,mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_Ent,mov_Valor_Mov_LoteAlmoxarifado_Sai,mov_CustoMedioLoteAlmoxarifado,mov_Valor_Mov_Ent,mov_Valor_Mov_Sai , id,mov_dt,mov_filial,matl_lote,almox_codigo,mov_prc_unit";
         wURI += "&TOTALIZADORES=mov_qtd_ent,mov_qtd_sai,mov_Valor_Mov_LoteAlmoxarifado_Ent,mov_Valor_Mov_LoteAlmoxarifado_Sai";
         wURI += "&REPETIDORES=mov_trans";
-        wURI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt>= '" + wpdtMovInicial + "' AND mov_dt<= '" + wpdtMovFinal + "' AND mov_dt_sys <= '" + wmov_dt_sys + "' AND NOT (mov_qtd=0 AND mov_trans='INV')"+wURL// AND NOT (mov_qtd_sai=0 AND mov_qtd_ent=0 AND mov_prc_unit=0)"; // 
+        wURI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (pac_codigo.nmPaciente = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt_sys <= '" + wmov_dt_sys + "' AND NOT (mov_qtd=0 AND mov_trans='INV')"+wURL// AND NOT (mov_qtd_sai=0 AND mov_qtd_ent=0 AND mov_prc_unit=0)"; // 
         wURI += "&GROUPBY=mov_trans, mov_dt, id&QUEBRAS=mov_filial,mov_trans";
         console.log(wURI)
         cc_relatorio(2, 'frmshc.Transacao.Main.Campo.boSintetico', 1, wURI, wpMPicture, wpMTitulos, 'frmshc.Transacao.Main.Grid')
