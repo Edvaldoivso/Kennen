@@ -23,6 +23,9 @@ var wpAlmoxarifado = document.getElementById('frmshc.Saldo.fme.fmeFiltro.Almoxar
     wURL += " AND (almox_codigo = '" + wpAlmoxarifado + "')";
   }
 
+if (wpdtMovInicial ) wURL += " AND (mov_dt>= '" + wpdtMovInicial + "')";
+
+if (wpdtMovFinal   ) wURL += " AND (mov_dt<= '" + wpdtMovFinal   + "')";
 
 
 
@@ -40,9 +43,12 @@ wpdmProdutoStatus = (wpdmProdutoStatus == '1') ? 'S' : wpdmProdutoStatus;     //
 wpdmProdutoStatus = (wpdmProdutoStatus == '2') ? 'N' : wpdmProdutoStatus;     // Inatvos
 
 
+//wpdtMovInicial    = (wpdtMovInicial == '') ? '01/01/2020' :wpdtMovInicial;       
+//wpdtMovFinal   = (wpdtMovFinal == '') ? '01/12/2050' : wpdtMovFinal 
+
 //var wQtdCol = 10;
 var wpMPicture = [     ,                 ,                  ,           ,                          ,                         ,'fMaskNumber(wCmp,6,1,0)','fMaskNumber(wCmp,6,1,0)','fMaskNumber(wCmp,0,1,0)','fMaskNumber(wCmp,6,1,0)','fMaskNumber(wCmp,6,1,0)']; 
-var wpMTitulos = ['SEQ', 'PRODUTO CÓDIGO','PRODUTO DESCRIÇÃO', 'FILIAL', 'DATA'                  , 'FILIAL<br>SALDO'       , 'FILIAL<br>C. MÉDIO'      , 'FILIAL<br>VALOR'       , 'GERAL<br>SALDO'        , 'GERAL<br>C. MÉDIO'     , 'GERAL<br>VALOR'];
+var wpMTitulos = ['SEQ', 'CÓDIGO PRODUTO','DESCRIÇÃO PRODUTO', 'FILIAL', 'DATA'                  , 'FILIAL<br>SALDO'       , 'FILIAL<br>C. MÉDIO'      , 'FILIAL<br>VALOR'       , 'GERAL<br>SALDO'        , 'GERAL<br>C. MÉDIO'     , 'GERAL<br>VALOR'];
 var wURI = cc.url.ccasegd_token + "TABELA=see_matmed_mov&DEBUG=109";
 wURI += "&COLUNAS=%60 mat_codigo,dsMaterial,mov_Filial,mov_dt, mov_SaldoFilial, mov_CustoMedioFilial,mov_valor_total_filial ,mov_Saldo, mov_CustoMedio,mov_valor_total FROM ( SELECT * FROM (SELECT %60 mat_codigo,almox_codigo,mat_codigo.dsMaterial as dsMaterial,mov_Filial,mov_dt, mov_SaldoFilial, mov_CustoMedioFilial,mov_valor_total_filial ,mov_Saldo, mov_CustoMedio,mov_valor_total ";
 wURI += "&COMPLEMENTO= ) x group BY mat_codigo) b ";
@@ -50,7 +56,7 @@ wURI += "&COMPLEMENTO= ) x group BY mat_codigo) b ";
 
 //RI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt< '" + wpdtMovInicial + "'";
 //RI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0) AND (mov_trans = '" + wpmov_trans + "' OR '" + wpmov_trans + "'='') AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (pac_codigo = " + wppac_codigo + " OR " + wppac_codigo + "=0) AND mov_dt< '" + wpdtMovInicial + "'";
-wURI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0)  AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='') AND (mov_dt< '" + wpdtMovInicial + "')"+ wURL;
+wURI += "&WHERE= (mov_filial = " + wpFilial + " OR " + wpFilial + "=0) AND (mat_codigo = " + wpmat_codigo + " OR " + wpmat_codigo + "=0)  AND (mat_codigo.caMaterialTP = '" + wpdmProdutoTipo + "' OR '" + wpdmProdutoTipo + "'='') AND (mat_codigo.doAtivo = '" + wpdmProdutoStatus + "' OR '" + wpdmProdutoStatus + "'='') AND (mat_codigo.caClassificacaoFiscal = '" + wpcaProdutoClassificacao + "' OR '" + wpcaProdutoClassificacao + "'='') AND (mat_codigo.caGrupo = '" + wpcaProdutoGrupo + "' OR '" + wpcaProdutoGrupo + "'='')"+ wURL;
 
 
 
