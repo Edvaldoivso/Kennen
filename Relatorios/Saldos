@@ -14,6 +14,7 @@ var wpdmProdutoTipo          = document.getElementById('frmshc.Saldo.fme.fmeFilt
 var wpdmProdutoStatus        = document.getElementById('frmshc.Saldo.fme.fmeFiltro.dmProdutoStatus'.toLowerCase()).value;
 var wpcaProdutoClassificacao = document.getElementById('frmshc.Saldo.fme.fmeFiltro.caProdutoClassificacao'.toLowerCase()).value;
 var wpcaProdutoGrupo         = document.getElementById('frmshc.Saldo.fme.fmeFiltro.caProdutoGrupo'.toLowerCase()).value;
+var wpCodigo_Produto = document.getElementById('frmshc.Saldo.fme.fmeFiltro.CodigoProduto'.toLowerCase()).value;
 
 var wpAlmoxarifado = document.getElementById('frmshc.Saldo.fme.fmeFiltro.Almoxarifado'.toLowerCase()).value;
    
@@ -26,6 +27,8 @@ var wpAlmoxarifado = document.getElementById('frmshc.Saldo.fme.fmeFiltro.Almoxar
 if (wpdtMovInicial ) wURL += " AND (mov_dt>= '" + wpdtMovInicial + "')";
 
 if (wpdtMovFinal   ) wURL += " AND (mov_dt<= '" + wpdtMovFinal   + "')";
+
+if (wpCodigo_Produto) wURL += " and (mat_codigo = '" + wpCodigo_Produto + "')";
 
 
 
