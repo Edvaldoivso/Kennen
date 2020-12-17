@@ -1,0 +1,88 @@
+
+
+//Salva imagem na Tabela de Arquivos ao mesmo tempo que você insere os dados na tabela de 'Capa'
+//Declaração de Todas as Variaveis
+
+var Imagem =  fProp("frmshc.evolucao.Main.CampoEvolucao.ImagemEvolucao.Campo.fmeInputs.blImagem","value")
+var cnPac = fProp("frmshc.evolucao.Main.CampoEvolucao.ImagemEvolucao.Campo.fmeInputs.cnPaciente","value")
+var wGrd = "frmshc.evolucao.main.campoevolucao.imagemevolucao.campo.fmegrdimagem.grd"
+var wInpId = fProp("frmshc.evolucao.main.campoevolucao.imagemevolucao.campo.fmeinputs.id","value")
+var ImgSeq = fProp("frmshc.evolucao.Main.CampoEvolucao.ImagemEvolucao.Campo.csPacienteImagem","value")
+  //console.log(wInpId + "O Id aqui")
+
+//---------------------------------------------------------------------------
+
+//CONTROLE DE CAMPOS EM DANGER E COM OU SEM VALOR
+var x=0
+$('[class = "form-control border border-danger"]').each(function (){
+if(!this.value) return x++
+})
+console.log(x +"Aqui o XIS")
+
+
+if(x == 0){
+  
+if(wInpId !=""){ // Estou Updatando pois registro é antigo
+
+
+  /* MENSAGEM DE SALVANDO */
+  _cc.loading.show("Salvando dados", 1, "w-salvando-dados");
+
+  /* FOR NOS INPUTS */
+  wJsn = _ccBtn.jsonDados(wGrd);
+  //console.log("wJsn", wJsn);
+
+  /* ENVIA DADOS*/
+  if (wInpId !="") {
+    wSaveUrl = cc.url.tabela + "tabela=shcPacienteImagemArquivo" + "&id=" + wInpId;
+    wSaveMthd = "put";
+  } else {
+    wSaveUrl = cc.url.tabela + "tabela=shcPacienteImagemArquivo";
+    wSaveMthd = "post";
+  };
+
+  wSaveAjx = _cc.ajax(wSaveUrl, wSaveMthd, "application/json", JSON.stringify(wJsn), "", "");
+
+  setTimeout(function(){_cc.loading.hide()},2000)
+
+
+
+
+}else{//Estou salvando um registro novo
+
+  /*Conjunto de Campos que são levados para o registro da imagem*/var wJsn = {
+      
+    "blImagem": Imagem,
+    "cnPaciente":cnPac,
+    "csPacienteImagem":ImgSeq
+
+  }
+  
+   //console.log(Imagem)
+  wSaveUrl = cc.url.tabela + "tabela=shcPacienteImagemArquivo";
+  var wSaveMthd = "post"
+  
+  
+  wSaveAjx = _cc.ajax(wSaveUrl, wSaveMthd, "application/json", JSON.stringify(wJsn), "", "");
+  
+  /* CONSOLE */
+  $.when(wSaveAjx).then(
+    function (jsonResp) {
+      /* VALIDACAO DO REST */
+      //console.log(jsonResp)
+  
+      const { cnRetorno } = jsonResp
+      //console.log(cnRetorno + "cnRetorno do json")
+      _cc.validaResultadoAjax(jsonResp, wSaveUrl);
+  
+      if (cnRetorno == 1) {
+        _cc.msg('Erro ao incluir imagem, tente novamente ou realize o Update do registro', 'danger')
+      }else{
+        _cc.msg('Inclusão de Imagem realizada com sucesso', 'success')
+      }
+    })
+  
+  }
+  
+
+}
