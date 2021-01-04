@@ -1,0 +1,29 @@
+var cnMaterial = fProp('frmshc.Prescricao.Main.ModalMaterial.fmeProfissional.cnMaterial','value') 
+
+
+
+
+async function fApresentacao() {
+  
+  const url = cc.url.ccasegd_token + 'TABELA=shcPrescricaoMedicamento&COLUNAS=ID,cnMaterial,caApresentacao&LIMIT=1&WHERE=cnMaterial='+cnMaterial
+
+  try {
+    const response = await $.ajax({
+      method: "GET",
+      url
+    })
+
+    const { data } = response
+    var { 0: { caApresentacao } } = data
+    console.log(data)   
+    console.log("apresentação:", caApresentacao)   
+    fProp('frmshc.Prescricao.Main.ModalMaterial.fmeProfissional.caApresentacao','value',caApresentacao)  
+  } catch (error) {    
+    fProp('frmshc.Prescricao.Main.ModalMaterial.fmeProfissional.caApresentacao','value'," ")
+  }
+}
+if(cnMaterial){     
+    //Existindo um material a via de Apresentação é buscada e setada no campo
+    fApresentacao() 
+}
+
