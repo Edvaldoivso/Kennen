@@ -1,0 +1,214 @@
+window.fCalculaHorariosCheckBox = async function fCalculaHorariosCheckBox() {
+
+ 
+    //Variavel Tempo Inicial 
+    var WTempoInicial = fProp('frmshc.Prescricao.Main.ModalMedicamento.hrInicio', 'value')
+    //Trasformando a String em tipo float, usando o split 
+    var TempoINIT = WTempoInicial
+    WTempoInicial = WTempoInicial.split(':')
+
+    //Variavel de Quantidade de vezes o remedios vai ser ingerido
+    var Wquantidade = fProp('frmshc.Prescricao.Main.ModalMedicamento.qtVezDia', 'value')
+
+   //pegando a hora inicioa para fazer a validação 
+   var HoraInicio = WTempoInicial[0] + '.' + WTempoInicial[1]
+
+    //if para validar campos 
+
+//if para validar campos 
+    var WcampoHorafinal = fProp('frmshc.Prescricao.Main.ModalMedicamento.hrFinal','value')
+    WcampoHorafinal  = WcampoHorafinal.split(':')
+  WcampoHorafinal = 24.00
+
+
+    var Wfrenquencia = fProp('frmshc.Prescricao.Main.ModalMedicamento.doFrequenciaTP', 'value')
+    var resultadodaconta = WcampoHorafinal - HoraInicio
+ 
+    resultadodaconta = resultadodaconta / Wquantidade
+
+   
+
+    var resultadoHora = parseInt(resultadodaconta).toFixed(2).split('.')
+ 
+
+    if (Wfrenquencia == 'D') {
+        
+        if (resultadoHora[1] == 0 && resultadoHora[0] == 0) {
+        } else {
+
+            if (resultadoHora[0] < 60) {
+                
+              await  fProp('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmecalcula.hrFinal', 'value', resultadoHora[0] + ':' + resultadoHora[1])
+               
+           
+    //Variavel Tempo De intervalo
+    //var WIntervaloTempo = fProp('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmecalcula.hrFinal', 'value')
+   // var WtempoFIM = WIntervaloTempo
+    //Trasformando a String em tipo float, usando o split 
+   //WIntervaloTempo = WIntervaloTempo.split(':')
+   
+    //pegando o intervalo de hora 
+    var HoraFinal = 24.00
+    var WhoraT = 0
+    //Varialvel que está recebendo o Minutos total
+    var WMinuto = 0
+ 
+
+    //conferindo se o valor vai passar de 24 horas 
+    var Wresultado = HoraFinal / Wquantidade
+  
+    var WIntervaloTempo = [parseInt(Wresultado),00]
+   
+   var Wtira = 24.00 - HoraInicio
+    var temp = Wquantidade - 1
+   var Wtira2 = (HoraInicio + parseInt(Wresultado)) * temp
+fProp('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmecalcula.hrFinal','value',Wresultado)
+
+    if (WTempoInicial && WIntervaloTempo && Wquantidade) {
+
+
+
+
+
+
+
+        //if para validar resultado, se não for maior que 24 horas o if vai para o else. obvio !
+        if (Wtira2 <= 24 && WTempoInicial != '' && Wquantidade != '' && WIntervaloTempo != '' && Wquantidade < 24) {
+          document.getElementById(cLower('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmeCheckBox')).innerHTML = " " 
+            fProp('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmecalcula.Botao.btnLimpa', 'hidden', 0)
+            //array que vai armazenar  os numero de checkbox 
+            var WOrdem = []
+            var WInter = []
+            //for que vai construir os checkbox e os intervalos de tempos
+            for (var i = 0; i <= 23; i++) {
+
+                // if para caso o total de checkbox estiver no intervalo 
+                if (parseFloat(WTempoInicial[0]) == i) {
+                    //for para calcular a quantidade de intervalos possiveis 
+                    for (var WD = 0; WD < Wquantidade; WD++) {
+                        // if para retirar a multiplicação por zero, fazendo assim que o horario começe da hora digitada no campo hora inicial 
+                        if (WD == 0) {
+                            //pegando a hora inicial e transformando em float 
+                            WhoraT = parseFloat(WTempoInicial[0])
+                            // pegando os minutos e transformando em float 
+                            WMinuto = parseFloat(WTempoInicial[1])
+                        } else {
+                            //pegando a hora inicial e transformando em float 
+                            WhoraT = WhoraT + parseFloat(WIntervaloTempo[0])
+
+                            // pegando os minutos e transformando em float 
+                            WMinuto = WMinuto + parseFloat(WIntervaloTempo[1])
+
+
+                        }
+
+                        // If para retirar minutos Irregulares 
+                        if (WMinuto >= 60) {
+
+                            //hora = hora + 1
+                            WhoraT = WhoraT + 1
+
+                            var Wfinal = WhoraT + '.' + (WMinuto = WMinuto - 60)
+
+
+
+
+
+                            //adicionando o resultado dentro de uma variavel, tanto as horas e os  minutos 
+
+                            //adicionando tudo dentro do array 
+                            WInter.push('' + Wfinal + '')
+
+                        } else {
+                            // se não tiver nenhuma particularidade mostra o resultado fechado
+                            //adicionando Checkbox de acordo com o if
+                            //document.getElementById(cLower('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmeCheckBox')).innerHTML += "<div class='Jabinho'><input type='checkbox' id='" + WhoraT + "' name='vehicle1' value='Bike'><label for='vehicle1'> " + WhoraT + ':' + WMinuto + "</label><br> </div>";
+                            //  $("[id='" + WhoraT + "']").attr("checked", "checked")
+
+
+                            if (WMinuto == '0') {
+
+                                var Wfinal = WhoraT + '.' + WMinuto
+
+                                WInter.push('' + Wfinal + '0')
+                            } else {
+
+                                var Wfinal = WhoraT + '.' + WMinuto
+
+                                WInter.push('' + Wfinal + '')
+
+                            }
+
+
+
+
+
+                        }
+
+                    }
+                }
+                //Verificando se  o id do check box ja existe, se não ele cria um novo 
+                //var Wtamanho = $("[id='" + i + "']").length
+                //if (Wtamanho == 0) {
+                //Criando checkbox
+                //document.getElementById(cLower('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmeCheckBox')).innerHTML += "<div class='CheckWet'><input type='checkbox' id='" + i + "' name='vehicle1' value='Bike'><label for='vehicle1'>  " + i + "</label><br> </div>";
+                //Adicionando horarios que não estão dentro do intervalo
+                WOrdem.push('' + i + '.00')
+            }
+
+            //concatenando Arrays
+            var alphaNumeric = WOrdem.concat(WInter);
+            //Ordedando o array para ordem crescente 
+            alphaNumeric.sort((a, b) => a - b)
+            //tirando valores Repetidos 
+            var novaArr = alphaNumeric.filter((este, i) => alphaNumeric.indexOf(este) == i);
+
+            //for para verificar se existe horarios validos e criando os horarios se eles existirem 
+            for (var c = 0; c < novaArr.length; c++) {
+
+                var result = novaArr[c].replace(".", ":")
+
+                if (novaArr[c] >= 24 ) {
+
+                } else {
+                    document.getElementById(cLower('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmeCheckBox')).innerHTML +=
+                        "<div class='Jabinho' style= ' display:inline-block; margin-right: 5px; margin-top:10px'><input style= 'float:left;' type='checkbox' id='" + novaArr[c] + "'name='recCheck' value='" + result + "'><label for='vehicle1'> " + result + "</label><br> </div>";
+
+                 $("[name='recCheck']").attr('onclick','fProp("frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmecalcula.hrFinal","value"," ")')
+               
+                }
+
+            }
+            //for para Checar os checkboxs 
+            for (var d = 0; d <= WInter.length; d++) {
+                if (WInter[d] == "24.00") {
+                    $('[id="0.00"]').attr('checked', 'checked')
+                    
+
+                } else {
+                    $("[id='" + WInter[d] + "']").attr('checked', 'checked')
+                }
+
+
+            }
+        } else {
+
+
+          
+
+
+
+
+
+
+
+        }
+    }
+} else {  }
+}
+
+
+} 
+
+}
+
