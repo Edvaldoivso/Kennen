@@ -1,0 +1,74 @@
+window.Fhora = function Fhora(WhoraIni2, WhoraQty2, Wfreq2, WObjRef2) {
+    var WhoraIni = fProp('' + WhoraIni2 + '', 'value')
+    var WhoraEnd = 24
+    var WhoraQty = fProp('' + WhoraQty2 + '', 'value')
+    var WObjRef = WObjRef2
+    var Wfreq = fProp('' + Wfreq2 + '', 'value')
+    if (WhoraIni && WhoraEnd && WhoraQty && WObjRef && Wfreq == 'D' || Wfreq == 2) {
+        document.getElementById(cLower('frmshc.Prescricao.Corpo.GridMedicamento.fmeCampos.fmeModalHora.fmeCheckBox')).innerHTML = " "
+        const HoraInicio2 = WhoraIni.split(':')
+        HoraInicio = parseInt(HoraInicio2[0]) + '.' + HoraInicio2[1]
+        var result
+        result = WhoraEnd / WhoraQty
+        //Intervalode Tempo
+        var WIntervaloTempo = [parseInt(result), 00]
+        WhoraQty2 = WhoraQty - 1
+        var Wresults = (parseInt(HoraInicio) + parseInt(WIntervaloTempo)) * WhoraQty2
+        if (Wresults < 24) {
+            var WHorariosOrdem = []
+            var WHorariosIntervalo = []
+            var HoraFR = 0
+            var Final
+            var MinutoFR = 0
+            WHorariosIntervalo.push(HoraInicio)
+            for (var i = 0; i <= 23; i++) {
+                if (i < WhoraQty && i != 0) {
+                    HoraFR = parseInt(HoraInicio[0]) + parseInt(WIntervaloTempo[0]) + parseInt(HoraFR)
+                    MinutoFR = parseInt(HoraInicio2[1]) + parseInt(WIntervaloTempo[1]) + parseInt(MinutoFR)
+                    if (MinutoFR >= 60) {
+                        HoraFR = HoraFR + 1
+                        Final = HoraFR + '.' + (MinutoFR - 60)
+                        WHorariosIntervalo.push(Final)
+                    } else {
+                        if(MinutoFR == 0){
+
+                            Final = HoraFR + '.' + parseFloat(MinutoFR) 
+                            WHorariosIntervalo.push(Final+'0')
+                        }else{
+                            Final = HoraFR + '.' + MinutoFR 
+                            WHorariosIntervalo.push(Final)
+                        }
+                       
+                    }
+                }
+                WHorariosOrdem.push('' + parseFloat(i) + '.00')
+            }
+            var WTotal = WHorariosOrdem.concat(WHorariosIntervalo);
+            //Ordedando o array para ordem crescente 
+            WTotal.sort((a, b) => a - b)
+            //tirando valores Repetidos 
+            var WTotalFinal = WTotal.filter((este, i) => WTotal.indexOf(este) == i);
+            for (let i = 0; i < WTotalFinal.length; i++) {
+                var HoraFormatada = WTotalFinal[i].replace('.', ':')
+                if (WTotalFinal[i] == 24) {
+
+                } else {
+                    document.getElementById(cLower('' + WObjRef + '')).innerHTML +=
+                        "<div class='Jabinho' style= ' display:inline-block; margin-right: 5px; margin-top:10px'><input style= 'float:left;' type='checkbox' id='" + WTotalFinal[i] + "'name='recCheck' value='" + HoraFormatada + "'><label for='vehicle1'> " + HoraFormatada + "</label><br> </div>";
+                }
+            }
+
+            for (let i = 0; i < WHorariosIntervalo.length; i++) {
+                if (WHorariosIntervalo[i] == "24.00") {
+                    $('[id="0.00"]').attr('checked', 'checked')
+                } else {
+                    $("[id='" + WHorariosIntervalo[i] + "']").attr('checked', 'checked')
+                }
+            }
+
+
+
+        }
+
+    }
+}
